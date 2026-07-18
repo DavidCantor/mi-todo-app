@@ -87,7 +87,7 @@ app.delete('/tareas/:id', (req, res) => {
 });
 
 app.get('/', (req, res) => {
-  res.send('holiii World!');
+    res.sendFile(path.join(__dirname, 'index.html'));
 });
 
 
