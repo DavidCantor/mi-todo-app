@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi To-Do List</title>
+    <style>
+        /* Un diseño ultra simple y limpio para no distraernos con CSS complejo */
+        body { font-family: sans-serif; max-width: 500px; margin: 40px auto; padding: 0 20px; background-color: #f4f4f9; color: #333; }
+        form { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        input, textarea, button { padding: 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px; }
+        button { background-color: #0070f3; color: white; border: none; cursor: pointer; font-weight: bold; }
+        button:hover { background-color: #0051a8; }
+        .tarea-card { background: white; padding: 15px; border-radius: 8px; margin-bottom: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center; }
+        .tarea-info.completada { text-decoration: line-through; color: #888; }
+        .btn-borrar { background-color: #ff4d4d; margin-left: 10px; }
+        .btn-borrar:hover { background-color: #cc0000; }
+    </style>
+</head>
+<body>
+
+    <h1>Mis Tareas</h1>
+
+    <!-- Formulario para CREAR tareas -->
+    <form id="formulario-tarea">
+        <input type="text" id="titulo" placeholder="Título de la tarea (Obligatorio)" required>
+        <textarea id="descripcion" placeholder="Descripción (Opcional)"></textarea>
+        <button type="submit">Agregar Tarea</button>
+    </form>
+
+    <!-- Contenedor donde se van a pintar las tareas (LEER, ACTUALIZAR, BORRAR) -->
+    <div id="lista-tareas"></div>
+
+    <script>
+        const API_URL = 'http://localhost:3000/tareas';
+        const formulario = document.getElementById('formulario-tarea');
+        const listaContenedor = document.getElementById('lista-tareas');
+
+        // ==========================================
+        // 1. FUNCIÓN PARA LEER LAS TAREAS (GET)
+        // ==========================================
+        async function obtenerTareas() {
+            try {
+                const respuesta = await fetch(API_URL);
+                const tareas = await respuesta.json();
+                
+                // Limpiamos el contenedor antes de volver a pintar
+                listaContenedor.innerHTML = '';
+
+                // Iteramos sobre cada tarea y creamos su diseño en HTML
+                tareas.forEach(tarea => {
+                    const div = document.createElement('div');
+                    div.className = 'tarea-card';
+                    
+                    div.innerHTML = `
+                        <div class="tarea-info ${tarea.estado === 'completada' ? 'completada' : ''}">
+                            <strong>${tarea.titulo}</strong>
+                            <p style="margin: 4px 0 0 0; font-size: 13px; color: #666;">${tarea.descripcion}</p>
+                        </div>
+                        <div>
+                            <button onclick="cambiarEstado(${tarea.id}, '${tarea.estado}')">
+                                ${tarea.estado === 'pendiente' ? '✓' : '⟲'}
+                            </button>
+                            <button class="btn-borrar" onclick="eliminarTarea(${tarea.id})">🗑</button>
+                        </div>
+                    `;
+                    listaContenedor.appendChild(div);
+                });
+            } catch (error) {
+                console.error("Error al obtener tareas:", error);
+            }
+        }
+
+        // ==========================================
+        // 2. FUNCIÓN PARA CREAR UNA TAREA (POST)
+        // ==========================================
+        formulario.addEventListener('submit', async (e) => {
+            e.preventDefault(); // Evita que la página se recargue
+
+            const titulo = document.getElementById('titulo').value;
+            const descripcion = document.getElementById('descripcion').value;
+
+            try {
+                const respuesta = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ titulo, descripcion })
+                });
+
+                if (respuesta.ok) {
+                    formulario.reset(); // Limpia los inputs
+                    obtenerTareas(); // Recarga la lista visible
+                }
+            } catch (error) {
+                console.error("Error al crear la tarea:", error);
+            }
+        });
+
+        // ==========================================
+        // 3. FUNCIÓN PARA ACTUALIZAR ESTADO (PUT)
+        // ==========================================
+        async function cambiarEstado(id, estadoActual) {
+            const nuevoEstado = estadoActual === 'pendiente' ? 'completada' : 'pendiente';
+            try {
+                await fetch(`${API_URL}/${id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ estado: nuevoEstado })
+                });
+                obtenerTareas();
+            } catch (error) {
+                console.error("Error al actualizar:", error);
+            }
+        }
+
+        // ==========================================
+        // 4. FUNCIÓN PARA ELIMINAR (DELETE)
+        // ==========================================
+        async function eliminarTarea(id) {
+            try {
+                await fetch(`${API_URL}/${id}`, { method: 'DELETE' });
+                obtenerTareas();
+            } catch (error) {
+                console.error("Error al eliminar:", error);
+            }
+        }
+
+        // Al cargar la página por primera vez, traemos las tareas existentes
+        obtenerTareas();
+    </script>
+</body>
+</html>
