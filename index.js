@@ -69,47 +69,55 @@ app.post('/tareas', async (req, res) => {
 });
 
 // ==========================================
-// 3. ACTUALIZAR (UPDATE) - Modificar una tarea por ID
+// 3. ACTUALIZAR (UPDATE) - Marcar como completada o pendiente
 // ==========================================
-app.put('/tareas/:id', async (req, res) => {
-    // Obtenemos el ID desde la URL (lo convierte a número porque llega como texto)
-    const idTarea = parseInt(req.params.id);
-    const { titulo, descripcion, estado } = req.body;
+// Usamos :id como parámetro dinámico para saber exactamente qué tarea modificar
+app.patch('/tareas/:id', async (req, res) => {
+    const { id } = req.params;
+    const { estado } = req.body; // Recibimos el nuevo estado ('pendiente' o 'completada')
 
-    // Buscamos la tarea en nuestra "base de datos"
-    const tarea = await Tarea.findById(idTarea);
-
-    // Si no existe, devolvemos un error 404 (Not Found)
-    if (!tarea) {
-        return res.status(404).json({ error: "Tarea no encontrada" });
+    // Validamos que el estado enviado sea correcto según nuestro modelo
+    if (estado && !['pendiente', 'completada'].disable && !['pendiente', 'completada'].includes(estado)) {
+        return res.status(400).json({ error: "Estado no válido" });
     }
 
-    // Actualizamos solo los campos que el cliente nos envíe
-    if (titulo !== undefined) tarea.titulo = titulo;
-    if (descripcion !== undefined) tarea.descripcion = descripcion;
-    if (estado !== undefined) tarea.estado = estado;
+    try {
+        // Buscamos por ID y actualizamos solo el campo estado
+        // { new: true } hace que Mongoose nos devuelva la tarea ya actualizada en lugar de la vieja
+        const tareaActualizada = await Tarea.findByIdAndUpdate(
+            id, 
+            { estado }, 
+            { new: true }
+        );
 
-    // Respondemos con la tarea ya modificada
-    res.json({ mensaje: "Tarea actualizada con éxito", tarea });
+        if (!tareaActualizada) {
+            return res.status(404).json({ error: "Tarea no encontrada" });
+        }
+
+        res.json(tareaActualizada);
+    } catch (error) {
+        res.status(500).json({ error: "Error al actualizar la tarea" });
+    }
 });
+
 // ==========================================
-// 4. BORRAR (DELETE) - Eliminar una tarea por ID
+// 4. ELIMINAR (DELETE) - Borrar una tarea definitivamente
 // ==========================================
 app.delete('/tareas/:id', async (req, res) => {
-    const idTarea = parseInt(req.params.id);
+    const { id } = req.params;
 
-    // Buscamos si la tarea existe antes de intentar borrarla
-    const tarea = await Tarea.findById(idTarea);
+    try {
+        // Eliminamos el documento directamente de MongoDB Atlas
+        const tareaEliminada = await Tarea.findByIdAndDelete(id);
 
-    if (!tarea) {
-        return res.status(404).json({ error: "Tarea no encontrada" });
+        if (!tareaEliminada) {
+            return res.status(404).json({ error: "Tarea no encontrada" });
+        }
+
+        res.json({ mensaje: "Tarea eliminada correctamente", tarea: tareaEliminada });
+    } catch (error) {
+        res.status(500).json({ error: "Error al eliminar la tarea" });
     }
-
-    // Eliminamos la tarea de la base de datos
-    await Tarea.findByIdAndDelete(idTarea);
-
-    // Respondemos con un mensaje de éxito
-    res.json({ mensaje: `Tarea con ID ${idTarea} eliminada correctamente` });
 });
 
 
