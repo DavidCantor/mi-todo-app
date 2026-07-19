@@ -3,298 +3,138 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Mi To-Do List</title>
-    <!-- Importamos Tailwind CSS desde CDN para diseño moderno instantáneo -->
+    <title>To-Do List - Autenticación</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <style>
-      /* Estilos personalizados para transiciones suaves que Tailwind aplica mejor con clases */
-      .card-transition {
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      }
+      .card-transition { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+      .oculto { display: none; }
     </style>
   </head>
+  <body class="bg-slate-50 text-slate-800 font-sans min-h-screen antialiased flex flex-col justify-between">
+    <main class="max-w-md w-full mx-auto px-4 py-16 flex-1 flex flex-col justify-center">
+      
+      <!-- Contenedor Dinámico -->
+      <div class="bg-white p-8 rounded-3xl shadow-sm border border-slate-100 card-transition">
+        
+        <!-- Alertas de estado -->
+        <div id="alert-error" class="oculto mb-4 p-3.5 text-xs font-medium rounded-xl bg-rose-50 border border-rose-200 text-rose-600 text-center"></div>
+        <div id="alert-success" class="oculto mb-4 p-3.5 text-xs font-medium rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-600 text-center"></div>
 
-  <body
-    class="bg-slate-50 text-slate-800 font-sans min-h-screen antialiased flex flex-col justify-between"
-  >
-    <main class="max-w-xl w-full mx-auto px-4 py-12">
-      <!-- Encabezado -->
-      <header class="mb-8 text-center">
-        <h1
-          class="text-3xl font-extrabold text-slate-900 tracking-tight flex items-center justify-center gap-2"
-        >
-          Mis Tareas
-        </h1>
-        <p class="text-sm text-slate-500 mt-1">
-          Gestiona tus proyectos y pendientes en tiempo real
-        </p>
-      </header>
-
-      <!-- Formulario para CREAR tareas -->
-      <form
-        id="formulario-tarea"
-        class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex flex-col gap-4 mb-8 card-transition hover:shadow-md"
-      >
-        <div class="flex flex-col gap-1">
-          <label
-            for="titulo"
-            class="text-xs font-semibold text-slate-600 uppercase tracking-wider"
-            >Título de la tarea</label
-          >
-          <input
-            type="text"
-            id="titulo"
-            placeholder="¿Qué tienes pendiente por hacer?"
-            class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all text-sm"
-            required
-          />
+        <!-- VISTA: LOGIN -->
+        <div id="vista-login">
+          <header class="mb-6 text-center">
+            <h2 class="text-2xl font-extrabold text-slate-900 tracking-tight">Iniciar Sesión</h2>
+            <p class="text-xs text-slate-400 mt-1">Ingresa tus credenciales para acceder a tus tareas</p>
+          </header>
+          <form id="form-login" class="flex flex-col gap-4">
+            <div class="flex flex-col gap-1">
+              <label class="text-xs font-semibold text-slate-600 uppercase tracking-wider">Correo Electrónico</label>
+              <input type="email" id="login-email" placeholder="ejemplo@correo.com" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 text-sm" required />
+            </div>
+            <div class="flex flex-col gap-1">
+              <label class="text-xs font-semibold text-slate-600 uppercase tracking-wider">Contraseña</label>
+              <input type="password" id="login-password" placeholder="••••••••" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 text-sm" required />
+            </div>
+            <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 rounded-xl shadow-sm transition-all text-sm mt-2 cursor-pointer">🔑 Entrar al sistema</button>
+          </form>
+          <p onclick="alternarVistas()" class="text-center text-xs text-blue-600 font-medium mt-5 cursor-pointer hover:underline">¿No tienes una cuenta aún? Regístrate aquí</p>
         </div>
 
-        <div class="flex flex-col gap-1">
-          <label
-            for="descripcion"
-            class="text-xs font-semibold text-slate-600 uppercase tracking-wider"
-            >Descripción (Opcional)</label
-          >
-          <textarea
-            id="descripcion"
-            placeholder="Agrega más detalles o notas sobre esta actividad..."
-            rows="2"
-            class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all text-sm resize-none"
-          ></textarea>
+        <!-- VISTA: REGISTRO -->
+        <div id="vista-registro" class="oculto">
+          <header class="mb-6 text-center">
+            <h2 class="text-2xl font-extrabold text-slate-900 tracking-tight">Crear Cuenta</h2>
+            <p class="text-xs text-slate-400 mt-1">Regístrate para empezar a organizar tu día</p>
+          </header>
+          <form id="form-registro" class="flex flex-col gap-4">
+            <div class="flex flex-col gap-1">
+              <label class="text-xs font-semibold text-slate-600 uppercase tracking-wider">Nombre completo</label>
+              <input type="text" id="reg-nombre" placeholder="David Santiago" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 text-sm" required />
+            </div>
+            <div class="flex flex-col gap-1">
+              <label class="text-xs font-semibold text-slate-600 uppercase tracking-wider">Correo Electrónico</label>
+              <input type="email" id="reg-email" placeholder="ejemplo@correo.com" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 text-sm" required />
+            </div>
+            <div class="flex flex-col gap-1">
+              <label class="text-xs font-semibold text-slate-600 uppercase tracking-wider">Contraseña</label>
+              <input type="password" id="reg-password" placeholder="Mínimo 6 caracteres" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 text-sm" required />
+            </div>
+            <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-2.5 rounded-xl shadow-sm transition-all text-sm mt-2 cursor-pointer">✨ Completar Registro</button>
+          </form>
+          <p onclick="alternarVistas()" class="text-center text-xs text-blue-600 font-medium mt-5 cursor-pointer hover:underline">¿Ya tienes cuenta? Inicia sesión aquí</p>
         </div>
 
-        <button
-          type="submit"
-          class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 rounded-xl shadow-sm hover:shadow transition-all text-sm mt-2 flex items-center justify-center gap-2 cursor-pointer"
-        >
-          <span>➕</span> Agregar Tarea
-        </button>
-      </form>
-      <!-- Barra de Filtros Interactiva -->
-      <div
-        class="flex justify-center bg-white p-2 rounded-xl border border-slate-200/60 shadow-sm mb-6 gap-2"
-      >
-        <button
-          id="filtro-todas"
-          onclick="filtrarTareas('todas')"
-          class="flex-1 text-xs font-semibold py-2 px-3 rounded-lg transition-all cursor-pointer bg-blue-600 text-white shadow-sm"
-        >
-          📋 Todas
-        </button>
-        <button
-          id="filtro-pendientes"
-          onclick="filtrarTareas('pendiente')"
-          class="flex-1 text-xs font-semibold py-2 px-3 rounded-lg transition-all cursor-pointer bg-slate-50 text-slate-600 hover:bg-slate-100"
-        >
-          ⏳ Pendientes
-        </button>
-        <button
-          id="filtro-completadas"
-          onclick="filtrarTareas('completada')"
-          class="flex-1 text-xs font-semibold py-2 px-3 rounded-lg transition-all cursor-pointer bg-slate-50 text-slate-600 hover:bg-slate-100"
-        >
-          ✅ Completadas
-        </button>
-      </div>
-      <!-- Contenedor donde se van a pintar las tareas (LEER, ACTUALIZAR, BORRAR) -->
-      <div id="lista-tareas" class="flex flex-col gap-3">
-        <!-- Las tareas se inyectarán dinámicamente aquí -->
       </div>
     </main>
 
-    <!-- Footer sencillo -->
-    <footer
-      class="py-6 text-center text-xs text-slate-400 border-t border-slate-100"
-    >
-      To-Do App &copy; 2026 &bull; Full-Stack Cloud Database Integration
+    <footer class="py-6 text-center text-xs text-slate-400 border-t border-slate-100">
+      To-Do App &copy; 2026 &bull; Secure Authentication Portal
     </footer>
 
     <script>
-      const API_URL = "/tareas";
-      const formulario = document.getElementById("formulario-tarea");
-      const listaContenedor = document.getElementById("lista-tareas");
-
-      let todasLasTareas = []; 
-      let filtroActual = 'todas';
+      const API_AUTH = '/api/auth';
       
-// ==========================================
-// 1. FUNCIÓN PARA LEER LAS TAREAS (GET)
-// ==========================================
-async function obtenerTareas() {
-    try {
-        const respuesta = await fetch(API_URL);
-        // NUEVO: Guardamos el arreglo que viene de MongoDB Atlas en nuestra variable global
-        todasLasTareas = await respuesta.json();
-        
-        // Ejecutamos el renderizado aplicando el filtro que esté activo
-        renderizarTareas();
-    } catch (error) {
-        console.error("Error al obtener tareas:", error);
-    }
-}
-// ==========================================
-// NUEVO: FUNCIÓN PARA FILTRAR Y PINTAR EN PANTALLA
-// ==========================================
-function renderizarTareas() {
-    // === NUEVO: CÁLCULO DE CONTADORES EN TIEMPO REAL ===
-    const total = todasLasTareas.length;
-    const pendientes = todasLasTareas.filter(t => t.estado === 'pendiente').length;
-    const completadas = todasLasTareas.filter(t => t.estado === 'completada').length;
+      // Redirección inmediata si ya hay una sesión activa en esta máquina
+      if(localStorage.getItem('token_todoapp')) {
+          window.location.href = '/mis-tareas';
+      }
 
-    // Actualizamos el texto de los botones con los números frescos
-    document.getElementById('filtro-todas').innerText = `📋 Todas (${total})`;
-    document.getElementById('filtro-pendientes').innerText = `⏳ Pendientes (${pendientes})`;
-    document.getElementById('filtro-completadas').innerText = `✅ Completadas (${completadas})`;
-    // ==================================================
+      function alternarVistas() {
+          document.getElementById('vista-login').classList.toggle('oculto');
+          document.getElementById('vista-registro').classList.toggle('oculto');
+          document.getElementById('alert-error').classList.add('oculto');
+          document.getElementById('alert-success').classList.add('oculto');
+      }
 
-    // Limpiamos el contenedor (Esto ya lo tenías)
-    listaContenedor.innerHTML = '';
+      function lanzarAlerta(tipo, msg) {
+          const alert = document.getElementById(`alert-${tipo}`);
+          alert.innerText = msg;
+          alert.classList.remove('oculto');
+          setTimeout(() => alert.classList.add('oculto'), 4000);
+      }
 
-    // Filtramos el arreglo global según la pestaña activa (Esto ya lo tenías)
-    const tareasFiltradas = todasLasTareas.filter(tarea => {
-        if (filtroActual === 'todas') return true;
-        return tarea.estado === filtroActual;
-    });
+      // SUBMIT REGISTRO
+      document.getElementById('form-registro').addEventListener('submit', async (e) => {
+          e.preventDefault();
+          const nombre = document.getElementById('reg-nombre').value;
+          const email = document.getElementById('reg-email').value;
+          const password = document.getElementById('reg-password').value;
 
-    // Si no hay tareas en este filtro específico, mostramos el estado vacío (Esto ya lo tenías)
-    if (tareasFiltradas.length === 0) {
-        listaContenedor.innerHTML = `
-            <div class="text-center py-12 bg-slate-100/50 rounded-2xl border border-dashed border-slate-200">
-                <span class="text-3xl block mb-2">🎉</span>
-                <p class="text-sm font-medium text-slate-500">No hay tareas en esta categoría.</p>
-            </div>
-        `;
-        return;
-    }
+          try {
+              const res = await fetch(`${API_AUTH}/registro`, {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ nombre, email, password })
+              });
+              const data = await res.json();
+              if(!res.ok) throw new Error(data.error);
 
-    // Pintamos solo las tareas filtradas (Esto ya lo tenías exactamente igual)
-    tareasFiltradas.forEach(tarea => {
-        const esCompletada = tarea.estado === 'completada';
-        const div = document.createElement('div');
-        
-        div.className = `card-transition bg-white p-4 rounded-xl border flex justify-between items-center gap-4 ${
-            esCompletada 
-            ? 'border-slate-100 opacity-65 shadow-none bg-slate-50/50' 
-            : 'border-slate-200/60 shadow-sm hover:shadow-md hover:border-slate-300'
-        }`;
-        
-        div.innerHTML = `
-            <div class="flex-1 min-w-0">
-                <h3 class="font-semibold text-sm sm:text-base text-slate-900 truncate ${esCompletada ? 'line-through text-slate-400' : ''}">
-                    ${tarea.titulo}
-                </h3>
-                ${tarea.descripcion 
-                    ? `<p class="text-xs sm:text-sm text-slate-500 mt-0.5 line-clamp-2 ${esCompletada ? 'line-through text-slate-400/80' : ''}">${tarea.descripcion}</p>` 
-                    : ''
-                }
-            </div>
-            <div class="flex items-center gap-2 shrink-0">
-                <button 
-                    onclick="cambiarEstado('${tarea._id}', '${tarea.estado}')"
-                    class="w-8 h-8 rounded-lg flex items-center justify-center border text-sm transition-colors cursor-pointer ${
-                        esCompletada 
-                        ? 'bg-amber-50 border-amber-200 text-amber-600 hover:bg-amber-100' 
-                        : 'bg-emerald-50 border-emerald-200 text-emerald-600 hover:bg-emerald-100'
-                    }"
-                    title="${esCompletada ? 'Marcar como pendiente' : 'Marcar como completada'}"
-                >
-                    ${esCompletada ? '⟲' : '✓'}
-                </button>
-                <button 
-                    onclick="eliminarTarea('${tarea._id}')"
-                    class="w-8 h-8 rounded-lg flex items-center justify-center bg-rose-50 border border-rose-200 text-rose-600 hover:bg-rose-100 text-sm transition-colors cursor-pointer"
-                    title="Eliminar tarea definitivamente"
-                >
-                    🗑
-                </button>
-            </div>
-        `;
-        listaContenedor.appendChild(div);
-    });
-}
-// ==========================================
-// NUEVO: FUNCIÓN PARA CAMBIAR ENTRE PESTAÑAS Y DISEÑO
-// ==========================================
-function filtrarTareas(nuevoFiltro) {
-    filtroActual = nuevoFiltro;
-
-    // IDs de los botones para actualizar sus clases visuales
-    const filtros = {
-        'todas': document.getElementById('filtro-todas'),
-        'pendiente': document.getElementById('filtro-pendientes'),
-        'completada': document.getElementById('filtro-completadas')
-    };
-
-    // Reseteamos los estilos de todos los botones a su estado apagado
-    Object.values(filtros).forEach(btn => {
-        btn.className = "flex-1 text-xs font-semibold py-2 px-3 rounded-lg transition-all cursor-pointer bg-slate-50 text-slate-600 hover:bg-slate-100";
-    });
-
-    // Encendemos el botón que fue seleccionado con el estilo azul de Tailwind
-    filtros[nuevoFiltro].className = "flex-1 text-xs font-semibold py-2 px-3 rounded-lg transition-all cursor-pointer bg-blue-600 text-white shadow-sm";
-
-    // Volvemos a pintar la lista con el filtro aplicado
-    renderizarTareas();
-}
-
-      // ==========================================
-      // 2. FUNCIÓN PARA CREAR UNA TAREA (POST)
-      // ==========================================
-      formulario.addEventListener("submit", async (e) => {
-        e.preventDefault();
-
-        const titulo = document.getElementById("titulo").value;
-        const descripcion = document.getElementById("descripcion").value;
-
-        try {
-          const respuesta = await fetch(API_URL, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ titulo, descripcion }),
-          });
-
-          if (respuesta.ok) {
-            formulario.reset();
-            obtenerTareas();
-          }
-        } catch (error) {
-          console.error("Error al crear la tarea:", error);
-        }
+              lanzarAlerta('success', '¡Usuario creado! Redirigiendo al login...');
+              document.getElementById('form-registro').reset();
+              setTimeout(alternarVistas, 1500);
+          } catch(err) { lanzarAlerta('error', err.message); }
       });
 
-      // ==========================================
-      // 3. FUNCIÓN PARA ACTUALIZAR ESTADO (PATCH)
-      // ==========================================
-      async function cambiarEstado(id, estadoActual) {
-        const nuevoEstado =
-          estadoActual === "pendiente" ? "completada" : "pendiente";
-        try {
-          await fetch(`${API_URL}/${id}`, {
-            method: "PATCH",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ estado: nuevoEstado }),
-          });
-          obtenerTareas();
-        } catch (error) {
-          console.error("Error al actualizar:", error);
-        }
-      }
+      // SUBMIT LOGIN
+      document.getElementById('form-login').addEventListener('submit', async (e) => {
+          e.preventDefault();
+          const email = document.getElementById('login-email').value;
+          const password = document.getElementById('login-password').value;
 
-      // ==========================================
-      // 4. FUNCIÓN PARA ELIMINAR (DELETE)
-      // ==========================================
-      async function eliminarTarea(id) {
-        try {
-          await fetch(`${API_URL}/${id}`, { method: "DELETE" });
-          obtenerTareas();
-        } catch (error) {
-          console.error("Error al eliminar:", error);
-        }
-      }
+          try {
+              const res = await fetch(`${API_AUTH}/login`, {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ email, password })
+              });
+              const data = await res.json();
+              if(!res.ok) throw new Error(data.error);
 
-      // Carga inicial
-      obtenerTareas();
+              localStorage.setItem('token_todoapp', data.token);
+              localStorage.setItem('usuario_todoapp', JSON.stringify(data.usuario));
+              window.location.href = '/mis-tareas';
+          } catch(err) { lanzarAlerta('error', err.message); }
+      });
     </script>
   </body>
 </html>

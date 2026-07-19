@@ -1,23 +1,36 @@
 // routes/tareas.routes.js
 const express = require('express');
 const router = express.Router();
-const Tarea = require('../models/Tarea'); // Importamos el modelo subiendo un nivel de carpeta
+const Tarea = require('../models/Tarea'); 
 
-// 1. LEER TODAS LAS TAREAS (GET)
-router.get('/', async (req, res) => {
+// 1. Corregimos la ruta de importación para subir un nivel
+const authGuard = require('../middleware/auth');
+
+// ==========================================
+// 1. LEER TAREAS DE UN USUARIO (GET)
+// ==========================================
+router.get('/', authGuard, async (req, res) => {
     try {
-        const tareas = await Tarea.find().sort({ creado_en: -1 });
+        // Buscamos SOLO las tareas cuyo campo 'usuario' coincida con el ID del token (req.usuarioId)
+        const tareas = await Tarea.find({ usuario: req.usuarioId }).sort({ creado_en: -1 });
         res.json(tareas);
     } catch (error) {
         res.status(500).json({ error: "Error al obtener las tareas" });
     }
 });
 
-// 2. CREAR UNA TAREA (POST)
-router.post('/', async (req, res) => {
+// ==========================================
+// 2. CREAR UNA TAREA ASOCIADA AL USUARIO (POST)
+// ==========================================
+router.post('/', authGuard, async (req, res) => {
     const { titulo, descripcion } = req.body;
     try {
-        const nuevaTarea = new Tarea({ titulo, descripcion });
+        // Forzamos a que la nueva tarea guarde el id del usuario autenticado
+        const nuevaTarea = new Tarea({ 
+            usuario: req.usuarioId, 
+            titulo, 
+            descripcion 
+        });
         await nuevaTarea.save();
         res.status(201).json(nuevaTarea);
     } catch (error) {
@@ -25,8 +38,10 @@ router.post('/', async (req, res) => {
     }
 });
 
-// 3. ACTUALIZAR ESTADO (PATCH)
-router.patch('/:id', async (req, res) => {
+// ==========================================
+// 3. ACTUALIZAR ESTADO DE FORMA SEGURA (PATCH)
+// ==========================================
+router.patch('/:id', authGuard, async (req, res) => {
     const { id } = req.params;
     const { estado } = req.body;
 
@@ -35,14 +50,16 @@ router.patch('/:id', async (req, res) => {
     }
 
     try {
-        const tareaActualizada = await Tarea.findByIdAndUpdate(
-            id, 
+        // Buscamos por el ID de la tarea Y nos aseguramos de que pertenezca al usuario logueado
+        const tareaActualizada = await Tarea.findOneAndUpdate(
+            { _id: id, usuario: req.usuarioId }, 
             { estado }, 
             { new: true }
         );
 
         if (!tareaActualizada) {
-            return res.status(404).json({ error: "Tarea no encontrada" });
+            // Si no existe o no le pertenece al usuario, respondemos con 404 por seguridad
+            return res.status(404).json({ error: "Tarea no encontrada o no tienes permisos" });
         }
 
         res.json(tareaActualizada);
@@ -51,14 +68,17 @@ router.patch('/:id', async (req, res) => {
     }
 });
 
-// 4. ELIMINAR TAREA (DELETE)
-router.delete('/:id', async (req, res) => {
+// ==========================================
+// 4. ELIMINAR TAREA DE FORMA SEGURA (DELETE)
+// ==========================================
+router.delete('/:id', authGuard, async (req, res) => {
     const { id } = req.params;
     try {
-        const tareaEliminada = await Tarea.findByIdAndDelete(id);
+        // Eliminamos asegurándonos de que el dueño sea quien lo solicita
+        const tareaEliminada = await Tarea.findOneAndDelete({ _id: id, usuario: req.usuarioId });
 
         if (!tareaEliminada) {
-            return res.status(404).json({ error: "Tarea no encontrada" });
+            return res.status(404).json({ error: "Tarea no encontrada o no tienes permisos" });
         }
 
         res.json({ mensaje: "Tarea eliminada correctamente" });
@@ -67,5 +87,4 @@ router.delete('/:id', async (req, res) => {
     }
 });
 
-// Exportamos el router para que index.js pueda usarlo
 module.exports = router;
