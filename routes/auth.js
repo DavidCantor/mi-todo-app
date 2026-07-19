@@ -5,7 +5,7 @@ const jwt = require('jsonwebtoken');
 const Usuario = require('../models/Usuario');
 
 // Una clave secreta para firmar tus tokens (En producción esto debe ir en una variable de entorno)
-const JWT_SECRET = 'davsan2523';
+const JWT_SECRET = process.env.JWT_SECRET;
 
 // ==========================================
 // 1. REGISTRO DE USUARIOS (POST /api/auth/registro)

@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken');
-const JWT_SECRET = 'davsan2523'; // Debe ser exactamente la misma clave de antes
+const JWT_SECRET = process.env.JWT_SECRET;
 
 module.exports = function (req, res, next) {
     // 1. Obtener el token que viene en la cabecera (Header) de la petición
