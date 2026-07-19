@@ -137,15 +137,27 @@ async function obtenerTareas() {
 // NUEVO: FUNCIÓN PARA FILTRAR Y PINTAR EN PANTALLA
 // ==========================================
 function renderizarTareas() {
+    // === NUEVO: CÁLCULO DE CONTADORES EN TIEMPO REAL ===
+    const total = todasLasTareas.length;
+    const pendientes = todasLasTareas.filter(t => t.estado === 'pendiente').length;
+    const completadas = todasLasTareas.filter(t => t.estado === 'completada').length;
+
+    // Actualizamos el texto de los botones con los números frescos
+    document.getElementById('filtro-todas').innerText = `📋 Todas (${total})`;
+    document.getElementById('filtro-pendientes').innerText = `⏳ Pendientes (${pendientes})`;
+    document.getElementById('filtro-completadas').innerText = `✅ Completadas (${completadas})`;
+    // ==================================================
+
+    // Limpiamos el contenedor (Esto ya lo tenías)
     listaContenedor.innerHTML = '';
 
-    // Filtramos el arreglo global según la pestaña activa
+    // Filtramos el arreglo global según la pestaña activa (Esto ya lo tenías)
     const tareasFiltradas = todasLasTareas.filter(tarea => {
         if (filtroActual === 'todas') return true;
         return tarea.estado === filtroActual;
     });
 
-    // Si no hay tareas en este filtro específico, mostramos el estado vacío
+    // Si no hay tareas en este filtro específico, mostramos el estado vacío (Esto ya lo tenías)
     if (tareasFiltradas.length === 0) {
         listaContenedor.innerHTML = `
             <div class="text-center py-12 bg-slate-100/50 rounded-2xl border border-dashed border-slate-200">
@@ -156,7 +168,7 @@ function renderizarTareas() {
         return;
     }
 
-    // Pintamos solo las tareas filtradas
+    // Pintamos solo las tareas filtradas (Esto ya lo tenías exactamente igual)
     tareasFiltradas.forEach(tarea => {
         const esCompletada = tarea.estado === 'completada';
         const div = document.createElement('div');
