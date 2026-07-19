@@ -1,6 +1,10 @@
+require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
+const mongoose = require('mongoose');
+
+const Tarea = require('./models/Tarea');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -8,51 +12,72 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 
-let tareas = [
-    {
-        id: 1,
-        titulo: "Aprender los fundamentos de Express",
-        descripcion: "Comprender cómo funcionan las rutas y los métodos HTTP",
-        estado: "completada",
-        creado_en: new Date()
-    }
-];
-app.get('/tareas', (req, res) => {
-    res.json(tareas);
+
+// ==========================================
+// CONEXIÓN A MONGOOSE (BASE DE DATOS)
+// ==========================================
+// Usamos la variable exacta que tienes en tu archivo .env
+mongoose.connect(process.env.MONGODB_URI)
+    .then(() => console.log('¡Conexión exitosa a MongoDB Atlas!'))
+    .catch(err => console.error('Error al conectar a la base de datos:', err));
+
+
+// Servir el Frontend en la ruta principal
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'index.html'));
 });
 
-app.post('/tareas', (req, res) => {
-    // Extraemos el título y descripción que vienen del cliente
+
+
+// ==========================================
+// 1. LEER (READ) - Obtener todas las tareas de la DB
+// ==========================================
+app.get('/tareas', async (req, res) => {
+    try {
+        // .find() busca absolutamente todos los documentos en la colección de MongoDB
+        const tareasDB = await Tarea.find();
+        res.json(tareasDB);
+    } catch (error) {
+        res.status(500).json({ error: "Error al obtener las tareas" });
+    }
+});
+
+// ==========================================
+// 2. CREAR (CREATE) - Guardar nueva tarea en la DB
+// ==========================================
+app.post('/tareas', async (req, res) => {
     const { titulo, descripcion } = req.body;
 
-    // Validación simple
     if (!titulo) {
         return res.status(400).json({ error: "El título es obligatorio" });
     }
-    // Creamos el nuevo objeto de la tarea
-    const nuevaTarea = {
-        id: tareas.length + 1, // Un ID incremental simple
-        titulo: titulo,
-        descripcion: descripcion || "",
-        estado: "pendiente", // Toda tarea nueva inicia pendiente
-        creado_en: new Date()
-    };
-    tareas.push(nuevaTarea);
 
-    // Respondemos con la tarea creada y un estado 201 Created
-    res.status(201).json(nuevaTarea);
+    try {
+        // Creamos una nueva instancia de nuestro modelo con los datos del body
+        const nuevaTarea = new Tarea({
+            titulo,
+            descripcion
+        });
+
+        // .save() se encarga de enviarlo por internet a MongoDB Atlas y guardarlo
+        await nuevaTarea.save();
+
+        res.status(201).json(nuevaTarea);
+    } catch (error) {
+        res.status(500).json({ error: "Error al guardar la tarea en la base de datos" });
+    }
 });
 
 // ==========================================
 // 3. ACTUALIZAR (UPDATE) - Modificar una tarea por ID
 // ==========================================
-app.put('/tareas/:id', (req, res) => {
+app.put('/tareas/:id', async (req, res) => {
     // Obtenemos el ID desde la URL (lo convierte a número porque llega como texto)
     const idTarea = parseInt(req.params.id);
     const { titulo, descripcion, estado } = req.body;
 
     // Buscamos la tarea en nuestra "base de datos"
-    const tarea = tareas.find(t => t.id === idTarea);
+    const tarea = await Tarea.findById(idTarea);
 
     // Si no existe, devolvemos un error 404 (Not Found)
     if (!tarea) {
@@ -70,26 +95,24 @@ app.put('/tareas/:id', (req, res) => {
 // ==========================================
 // 4. BORRAR (DELETE) - Eliminar una tarea por ID
 // ==========================================
-app.delete('/tareas/:id', (req, res) => {
+app.delete('/tareas/:id', async (req, res) => {
     const idTarea = parseInt(req.params.id);
 
     // Buscamos si la tarea existe antes de intentar borrarla
-    const existe = tareas.some(t => t.id === idTarea);
-    
-    if (!existe) {
+    const tarea = await Tarea.findById(idTarea);
+
+    if (!tarea) {
         return res.status(404).json({ error: "Tarea no encontrada" });
     }
 
-    // Filtramos el arreglo para dejar por fuera la tarea que tiene ese ID
-    tareas = tareas.filter(t => t.id !== idTarea);
+    // Eliminamos la tarea de la base de datos
+    await Tarea.findByIdAndDelete(idTarea);
 
     // Respondemos con un mensaje de éxito
     res.json({ mensaje: `Tarea con ID ${idTarea} eliminada correctamente` });
 });
 
-app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'index.html'));
-});
+
 
 
 
