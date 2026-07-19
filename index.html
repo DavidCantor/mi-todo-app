@@ -1,203 +1,288 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Mi To-Do List</title>
     <!-- Importamos Tailwind CSS desde CDN para diseño moderno instantáneo -->
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <style>
-        /* Estilos personalizados para transiciones suaves que Tailwind aplica mejor con clases */
-        .card-transition {
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
+      /* Estilos personalizados para transiciones suaves que Tailwind aplica mejor con clases */
+      .card-transition {
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      }
     </style>
-</head>
-<body class="bg-slate-50 text-slate-800 font-sans min-h-screen antialiased flex flex-col justify-between">
+  </head>
 
+  <body
+    class="bg-slate-50 text-slate-800 font-sans min-h-screen antialiased flex flex-col justify-between"
+  >
     <main class="max-w-xl w-full mx-auto px-4 py-12">
-        <!-- Encabezado -->
-        <header class="mb-8 text-center">
-            <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight flex items-center justify-center gap-2">
-                 Mis Tareas
-            </h1>
-            <p class="text-sm text-slate-500 mt-1">Gestiona tus proyectos y pendientes en tiempo real</p>
-        </header>
+      <!-- Encabezado -->
+      <header class="mb-8 text-center">
+        <h1
+          class="text-3xl font-extrabold text-slate-900 tracking-tight flex items-center justify-center gap-2"
+        >
+          Mis Tareas
+        </h1>
+        <p class="text-sm text-slate-500 mt-1">
+          Gestiona tus proyectos y pendientes en tiempo real
+        </p>
+      </header>
 
-        <!-- Formulario para CREAR tareas -->
-        <form id="formulario-tarea" class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex flex-col gap-4 mb-8 card-transition hover:shadow-md">
-            <div class="flex flex-col gap-1">
-                <label for="titulo" class="text-xs font-semibold text-slate-600 uppercase tracking-wider">Título de la tarea</label>
-                <input 
-                    type="text" 
-                    id="titulo" 
-                    placeholder="¿Qué tienes pendiente por hacer?" 
-                    class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all text-sm"
-                    required
-                >
-            </div>
-            
-            <div class="flex flex-col gap-1">
-                <label for="descripcion" class="text-xs font-semibold text-slate-600 uppercase tracking-wider">Descripción (Opcional)</label>
-                <textarea 
-                    id="descripcion" 
-                    placeholder="Agrega más detalles o notas sobre esta actividad..." 
-                    rows="2"
-                    class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all text-sm resize-none"
-                ></textarea>
-            </div>
-
-            <button 
-                type="submit" 
-                class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 rounded-xl shadow-sm hover:shadow transition-all text-sm mt-2 flex items-center justify-center gap-2 cursor-pointer"
-            >
-                <span>➕</span> Agregar Tarea
-            </button>
-        </form>
-        
-        <!-- Contenedor donde se van a pintar las tareas (LEER, ACTUALIZAR, BORRAR) -->
-        <div id="lista-tareas" class="flex flex-col gap-3">
-            <!-- Las tareas se inyectarán dinámicamente aquí -->
+      <!-- Formulario para CREAR tareas -->
+      <form
+        id="formulario-tarea"
+        class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex flex-col gap-4 mb-8 card-transition hover:shadow-md"
+      >
+        <div class="flex flex-col gap-1">
+          <label
+            for="titulo"
+            class="text-xs font-semibold text-slate-600 uppercase tracking-wider"
+            >Título de la tarea</label
+          >
+          <input
+            type="text"
+            id="titulo"
+            placeholder="¿Qué tienes pendiente por hacer?"
+            class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all text-sm"
+            required
+          />
         </div>
+
+        <div class="flex flex-col gap-1">
+          <label
+            for="descripcion"
+            class="text-xs font-semibold text-slate-600 uppercase tracking-wider"
+            >Descripción (Opcional)</label
+          >
+          <textarea
+            id="descripcion"
+            placeholder="Agrega más detalles o notas sobre esta actividad..."
+            rows="2"
+            class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all text-sm resize-none"
+          ></textarea>
+        </div>
+
+        <button
+          type="submit"
+          class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 rounded-xl shadow-sm hover:shadow transition-all text-sm mt-2 flex items-center justify-center gap-2 cursor-pointer"
+        >
+          <span>➕</span> Agregar Tarea
+        </button>
+      </form>
+      <!-- Barra de Filtros Interactiva -->
+      <div
+        class="flex justify-center bg-white p-2 rounded-xl border border-slate-200/60 shadow-sm mb-6 gap-2"
+      >
+        <button
+          id="filtro-todas"
+          onclick="filtrarTareas('todas')"
+          class="flex-1 text-xs font-semibold py-2 px-3 rounded-lg transition-all cursor-pointer bg-blue-600 text-white shadow-sm"
+        >
+          📋 Todas
+        </button>
+        <button
+          id="filtro-pendientes"
+          onclick="filtrarTareas('pendiente')"
+          class="flex-1 text-xs font-semibold py-2 px-3 rounded-lg transition-all cursor-pointer bg-slate-50 text-slate-600 hover:bg-slate-100"
+        >
+          ⏳ Pendientes
+        </button>
+        <button
+          id="filtro-completadas"
+          onclick="filtrarTareas('completada')"
+          class="flex-1 text-xs font-semibold py-2 px-3 rounded-lg transition-all cursor-pointer bg-slate-50 text-slate-600 hover:bg-slate-100"
+        >
+          ✅ Completadas
+        </button>
+      </div>
+      <!-- Contenedor donde se van a pintar las tareas (LEER, ACTUALIZAR, BORRAR) -->
+      <div id="lista-tareas" class="flex flex-col gap-3">
+        <!-- Las tareas se inyectarán dinámicamente aquí -->
+      </div>
     </main>
 
     <!-- Footer sencillo -->
-    <footer class="py-6 text-center text-xs text-slate-400 border-t border-slate-100">
-        To-Do App &copy; 2026 &bull; Full-Stack Cloud Database Integration
+    <footer
+      class="py-6 text-center text-xs text-slate-400 border-t border-slate-100"
+    >
+      To-Do App &copy; 2026 &bull; Full-Stack Cloud Database Integration
     </footer>
 
     <script>
-        const API_URL = '/tareas';
-        const formulario = document.getElementById('formulario-tarea');
-        const listaContenedor = document.getElementById('lista-tareas');
+      const API_URL = "/tareas";
+      const formulario = document.getElementById("formulario-tarea");
+      const listaContenedor = document.getElementById("lista-tareas");
 
-        // ==========================================
-        // 1. FUNCIÓN PARA LEER LAS TAREAS (GET)
-        // ==========================================
-        async function obtenerTareas() {
-            try {
-                const respuesta = await fetch(API_URL);
-                const tareas = await respuesta.json();
-                
-                listaContenedor.innerHTML = '';
+      let todasLasTareas = []; 
+      let filtroActual = 'todas';
+      
+// ==========================================
+// 1. FUNCIÓN PARA LEER LAS TAREAS (GET)
+// ==========================================
+async function obtenerTareas() {
+    try {
+        const respuesta = await fetch(API_URL);
+        // NUEVO: Guardamos el arreglo que viene de MongoDB Atlas en nuestra variable global
+        todasLasTareas = await respuesta.json();
+        
+        // Ejecutamos el renderizado aplicando el filtro que esté activo
+        renderizarTareas();
+    } catch (error) {
+        console.error("Error al obtener tareas:", error);
+    }
+}
+// ==========================================
+// NUEVO: FUNCIÓN PARA FILTRAR Y PINTAR EN PANTALLA
+// ==========================================
+function renderizarTareas() {
+    listaContenedor.innerHTML = '';
 
-                if (tareas.length === 0) {
-                    listaContenedor.innerHTML = `
-                        <div class="text-center py-12 bg-slate-100/50 rounded-2xl border border-dashed border-slate-200">
-                            <span class="text-3xl block mb-2">🎉</span>
-                            <p class="text-sm font-medium text-slate-500">¡No tienes tareas pendientes!</p>
-                        </div>
-                    `;
-                    return;
+    // Filtramos el arreglo global según la pestaña activa
+    const tareasFiltradas = todasLasTareas.filter(tarea => {
+        if (filtroActual === 'todas') return true;
+        return tarea.estado === filtroActual;
+    });
+
+    // Si no hay tareas en este filtro específico, mostramos el estado vacío
+    if (tareasFiltradas.length === 0) {
+        listaContenedor.innerHTML = `
+            <div class="text-center py-12 bg-slate-100/50 rounded-2xl border border-dashed border-slate-200">
+                <span class="text-3xl block mb-2">🎉</span>
+                <p class="text-sm font-medium text-slate-500">No hay tareas en esta categoría.</p>
+            </div>
+        `;
+        return;
+    }
+
+    // Pintamos solo las tareas filtradas
+    tareasFiltradas.forEach(tarea => {
+        const esCompletada = tarea.estado === 'completada';
+        const div = document.createElement('div');
+        
+        div.className = `card-transition bg-white p-4 rounded-xl border flex justify-between items-center gap-4 ${
+            esCompletada 
+            ? 'border-slate-100 opacity-65 shadow-none bg-slate-50/50' 
+            : 'border-slate-200/60 shadow-sm hover:shadow-md hover:border-slate-300'
+        }`;
+        
+        div.innerHTML = `
+            <div class="flex-1 min-w-0">
+                <h3 class="font-semibold text-sm sm:text-base text-slate-900 truncate ${esCompletada ? 'line-through text-slate-400' : ''}">
+                    ${tarea.titulo}
+                </h3>
+                ${tarea.descripcion 
+                    ? `<p class="text-xs sm:text-sm text-slate-500 mt-0.5 line-clamp-2 ${esCompletada ? 'line-through text-slate-400/80' : ''}">${tarea.descripcion}</p>` 
+                    : ''
                 }
-
-                tareas.forEach(tarea => {
-                    const esCompletada = tarea.estado === 'completada';
-                    const div = document.createElement('div');
-                    
-                    // Clases dinámicas basadas en el estado de la tarea
-                    div.className = `card-transition bg-white p-4 rounded-xl border flex justify-between items-center gap-4 ${
+            </div>
+            <div class="flex items-center gap-2 shrink-0">
+                <button 
+                    onclick="cambiarEstado('${tarea._id}', '${tarea.estado}')"
+                    class="w-8 h-8 rounded-lg flex items-center justify-center border text-sm transition-colors cursor-pointer ${
                         esCompletada 
-                        ? 'border-slate-100 opacity-65 shadow-none bg-slate-50/50' 
-                        : 'border-slate-200/60 shadow-sm hover:shadow-md hover:border-slate-300'
-                    }`;
-                    
-                    div.innerHTML = `
-                        <div class="flex-1 min-w-0">
-                            <h3 class="font-semibold text-sm sm:text-base text-slate-900 truncate ${esCompletada ? 'line-through text-slate-400' : ''}">
-                                ${tarea.titulo}
-                            </h3>
-                            ${tarea.descripcion 
-                                ? `<p class="text-xs sm:text-sm text-slate-500 mt-0.5 line-clamp-2 ${esCompletada ? 'line-through text-slate-400/80' : ''}">${tarea.descripcion}</p>` 
-                                : ''
-                            }
-                        </div>
-                        <div class="flex items-center gap-2 shrink-0">
-                            <!-- Botón de Estado -->
-                            <button 
-                                onclick="cambiarEstado('${tarea._id}', '${tarea.estado}')"
-                                class="w-8 h-8 rounded-lg flex items-center justify-center border text-sm transition-colors cursor-pointer ${
-                                    esCompletada 
-                                    ? 'bg-amber-50 border-amber-200 text-amber-600 hover:bg-amber-100' 
-                                    : 'bg-emerald-50 border-emerald-200 text-emerald-600 hover:bg-emerald-100'
-                                }"
-                                title="${esCompletada ? 'Marcar como pendiente' : 'Marcar como completada'}"
-                            >
-                                ${esCompletada ? '⟲' : '✓'}
-                            </button>
-                            <!-- Botón de Borrar -->
-                            <button 
-                                onclick="eliminarTarea('${tarea._id}')"
-                                class="w-8 h-8 rounded-lg flex items-center justify-center bg-rose-50 border border-rose-200 text-rose-600 hover:bg-rose-100 text-sm transition-colors cursor-pointer"
-                                title="Eliminar tarea definitivamente"
-                            >
-                                🗑
-                            </button>
-                        </div>
-                    `;
-                    listaContenedor.appendChild(div);
-                });
-            } catch (error) {
-                console.error("Error al obtener tareas:", error);
-            }
+                        ? 'bg-amber-50 border-amber-200 text-amber-600 hover:bg-amber-100' 
+                        : 'bg-emerald-50 border-emerald-200 text-emerald-600 hover:bg-emerald-100'
+                    }"
+                    title="${esCompletada ? 'Marcar como pendiente' : 'Marcar como completada'}"
+                >
+                    ${esCompletada ? '⟲' : '✓'}
+                </button>
+                <button 
+                    onclick="eliminarTarea('${tarea._id}')"
+                    class="w-8 h-8 rounded-lg flex items-center justify-center bg-rose-50 border border-rose-200 text-rose-600 hover:bg-rose-100 text-sm transition-colors cursor-pointer"
+                    title="Eliminar tarea definitivamente"
+                >
+                    🗑
+                </button>
+            </div>
+        `;
+        listaContenedor.appendChild(div);
+    });
+}
+// ==========================================
+// NUEVO: FUNCIÓN PARA CAMBIAR ENTRE PESTAÑAS Y DISEÑO
+// ==========================================
+function filtrarTareas(nuevoFiltro) {
+    filtroActual = nuevoFiltro;
+
+    // IDs de los botones para actualizar sus clases visuales
+    const filtros = {
+        'todas': document.getElementById('filtro-todas'),
+        'pendiente': document.getElementById('filtro-pendientes'),
+        'completada': document.getElementById('filtro-completadas')
+    };
+
+    // Reseteamos los estilos de todos los botones a su estado apagado
+    Object.values(filtros).forEach(btn => {
+        btn.className = "flex-1 text-xs font-semibold py-2 px-3 rounded-lg transition-all cursor-pointer bg-slate-50 text-slate-600 hover:bg-slate-100";
+    });
+
+    // Encendemos el botón que fue seleccionado con el estilo azul de Tailwind
+    filtros[nuevoFiltro].className = "flex-1 text-xs font-semibold py-2 px-3 rounded-lg transition-all cursor-pointer bg-blue-600 text-white shadow-sm";
+
+    // Volvemos a pintar la lista con el filtro aplicado
+    renderizarTareas();
+}
+
+      // ==========================================
+      // 2. FUNCIÓN PARA CREAR UNA TAREA (POST)
+      // ==========================================
+      formulario.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const titulo = document.getElementById("titulo").value;
+        const descripcion = document.getElementById("descripcion").value;
+
+        try {
+          const respuesta = await fetch(API_URL, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ titulo, descripcion }),
+          });
+
+          if (respuesta.ok) {
+            formulario.reset();
+            obtenerTareas();
+          }
+        } catch (error) {
+          console.error("Error al crear la tarea:", error);
         }
+      });
 
-        // ==========================================
-        // 2. FUNCIÓN PARA CREAR UNA TAREA (POST)
-        // ==========================================
-        formulario.addEventListener('submit', async (e) => {
-            e.preventDefault();
-
-            const titulo = document.getElementById('titulo').value;
-            const descripcion = document.getElementById('descripcion').value;
-
-            try {
-                const respuesta = await fetch(API_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ titulo, descripcion })
-                });
-
-                if (respuesta.ok) {
-                    formulario.reset();
-                    obtenerTareas();
-                }
-            } catch (error) {
-                console.error("Error al crear la tarea:", error);
-            }
-        });
-
-        // ==========================================
-        // 3. FUNCIÓN PARA ACTUALIZAR ESTADO (PATCH)
-        // ==========================================
-        async function cambiarEstado(id, estadoActual) {
-            const nuevoEstado = estadoActual === 'pendiente' ? 'completada' : 'pendiente';
-            try {
-                await fetch(`${API_URL}/${id}`, {
-                    method: 'PATCH', 
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ estado: nuevoEstado })
-                });
-                obtenerTareas();
-            } catch (error) {
-                console.error("Error al actualizar:", error);
-            }
+      // ==========================================
+      // 3. FUNCIÓN PARA ACTUALIZAR ESTADO (PATCH)
+      // ==========================================
+      async function cambiarEstado(id, estadoActual) {
+        const nuevoEstado =
+          estadoActual === "pendiente" ? "completada" : "pendiente";
+        try {
+          await fetch(`${API_URL}/${id}`, {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ estado: nuevoEstado }),
+          });
+          obtenerTareas();
+        } catch (error) {
+          console.error("Error al actualizar:", error);
         }
+      }
 
-        // ==========================================
-        // 4. FUNCIÓN PARA ELIMINAR (DELETE)
-        // ==========================================
-        async function eliminarTarea(id) {
-            try {
-                await fetch(`${API_URL}/${id}`, { method: 'DELETE' });
-                obtenerTareas();
-            } catch (error) {
-                console.error("Error al eliminar:", error);
-            }
+      // ==========================================
+      // 4. FUNCIÓN PARA ELIMINAR (DELETE)
+      // ==========================================
+      async function eliminarTarea(id) {
+        try {
+          await fetch(`${API_URL}/${id}`, { method: "DELETE" });
+          obtenerTareas();
+        } catch (error) {
+          console.error("Error al eliminar:", error);
         }
+      }
 
-        // Carga inicial
-        obtenerTareas();
+      // Carga inicial
+      obtenerTareas();
     </script>
-</body>
+  </body>
 </html>
