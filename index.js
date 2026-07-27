@@ -20,6 +20,10 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'index.html')); // Tu login
 });
 
+app.get(['/dashboard', '/dashboard.html'], (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'dashboard.html'));
+});
+
 app.get('/mis-tareas', (req, res) => {
     res.sendFile(path.join(__dirname, './public/tareas.html')); // Tu app de tareas
 });

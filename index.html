@@ -49,7 +49,7 @@
           <form id="form-registro" class="flex flex-col gap-4">
             <div class="flex flex-col gap-1">
               <label class="text-xs font-semibold text-slate-600 uppercase tracking-wider">Nombre completo</label>
-              <input type="text" id="reg-nombre" placeholder="David Santiago" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 text-sm" required />
+              <input type="text" id="reg-nombre" placeholder="Nombre completo" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 text-sm" required />
             </div>
             <div class="flex flex-col gap-1">
               <label class="text-xs font-semibold text-slate-600 uppercase tracking-wider">Correo Electrónico</label>
@@ -76,7 +76,7 @@
       
       // Redirección inmediata si ya hay una sesión activa en esta máquina
       if(localStorage.getItem('token_todoapp')) {
-          window.location.href = '/mis-tareas';
+          window.location.href = '/dashboard.html';
       }
 
       function alternarVistas() {
@@ -132,7 +132,7 @@
 
               localStorage.setItem('token_todoapp', data.token);
               localStorage.setItem('usuario_todoapp', JSON.stringify(data.usuario));
-              window.location.href = '/mis-tareas';
+              window.location.href = '/dashboard';
           } catch(err) { lanzarAlerta('error', err.message); }
       });
     </script>

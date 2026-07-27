@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="es" class="h-full bg-slate-50 text-slate-800">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FitControl SaaS - Panel de Gestión de Gimnasios</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- FontAwesome Icons CDN -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#eff6ff',
+              100: '#dbeafe',
+              500: '#3b82f6',
+              600: '#2563eb',
+              700: '#1d4ed8',
+            }
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="h-full flex flex-col font-sans antialiased selection:bg-brand-500 selection:text-white">
+
+  <!-- Top Navbar -->
+  <header class="bg-white border-b border-slate-200 px-6 py-3 flex items-center justify-between sticky top-0 z-50 shadow-sm">
+    <div class="flex items-center space-x-4">
+      <div class="flex items-center space-x-2">
+        <div class="bg-brand-600 text-white p-2 rounded-xl font-black text-xl tracking-wider flex items-center justify-center w-10 h-10 shadow-lg shadow-brand-500/20">
+          <i class="fa-solid fa-dumbbell"></i>
+        </div>
+        <span class="text-xl font-bold tracking-tight text-slate-900">Fit<span class="text-brand-600">Control</span></span>
+        <span class="bg-brand-50 text-brand-600 text-xs font-semibold px-2.5 py-0.5 rounded-full border border-brand-200">SaaS MVP</span>
+      </div>
+      <div class="h-6 w-px bg-slate-200 mx-2"></div>
+      <div class="flex items-center text-sm text-slate-600 bg-slate-100/80 px-3 py-1.5 rounded-lg border border-slate-200">
+        <i class="fa-solid fa-building text-slate-400 mr-2"></i>
+        <span class="font-medium text-slate-700">Sede Principal - Mosquera</span>
+      </div>
+    </div>
+
+    <!-- User Profile & Logout -->
+    <div class="flex items-center space-x-4">
+      <button class="relative p-2 text-slate-500 hover:text-slate-800 transition-colors">
+        <i class="fa-solid fa-bell text-lg"></i>
+        <span class="absolute top-1 right-1 w-2.5 h-2.5 bg-rose-500 rounded-full ring-2 ring-white"></span>
+      </button>
+
+      <!-- Logged-in User Info -->
+      <div class="flex items-center space-x-3 border-l border-slate-200 pl-4">
+        <img class="w-9 h-9 rounded-full object-cover ring-2 ring-brand-500/30" src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=150" alt="Avatar Usuario">
+        <div class="text-left">
+          <p class="text-sm font-semibold text-slate-800 leading-none" id="nombre-usuario">...</p>
+          <p class="text-xs text-brand-600 font-medium mt-1">Admin / Software Developer</p>
+        </div>
+      </div>
+
+      <!-- Functional Logout Button -->
+      <button onclick="cerrarSesion()" class="ml-2 p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-xl transition-all border border-transparent hover:border-rose-200 flex items-center gap-1.5 text-xs font-medium cursor-pointer" title="Cerrar Sesión">
+        <i class="fa-solid fa-right-from-bracket text-sm"></i>
+        <span class="hidden sm:inline">Salir</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <div class="flex flex-1 overflow-hidden">
+
+    <!-- Sidebar Navigation -->
+    <aside class="w-64 bg-white border-r border-slate-200 p-4 flex flex-col justify-between shrink-0 hidden md:flex">
+      <nav class="space-y-1">
+        <p class="px-3 text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Menú Principal</p>
+        <a href="#" class="flex items-center space-x-3 px-3 py-2.5 rounded-xl bg-brand-600 text-white font-medium shadow-md shadow-brand-600/20">
+          <i class="fa-solid fa-chart-pie w-5"></i>
+          <span>Dashboard</span>
+        </a>
+        <a href="#" class="flex items-center space-x-3 px-3 py-2.5 rounded-xl text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition-all font-medium">
+          <i class="fa-solid fa-qrcode w-5"></i>
+          <span>Control de Acceso</span>
+        </a>
+        <a href="#" class="flex items-center space-x-3 px-3 py-2.5 rounded-xl text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition-all font-medium">
+          <i class="fa-solid fa-users w-5"></i>
+          <span>Socios</span>
+        </a>
+        <a href="#" class="flex items-center space-x-3 px-3 py-2.5 rounded-xl text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition-all font-medium">
+          <i class="fa-solid fa-id-card w-5"></i>
+          <span>Planes y Membresías</span>
+        </a>
+
+        <p class="px-3 text-xs font-semibold text-slate-400 uppercase tracking-wider pt-6 mb-2">Finanzas & Operación</p>
+        <a href="#" class="flex items-center space-x-3 px-3 py-2.5 rounded-xl text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition-all font-medium">
+          <i class="fa-solid fa-wallet w-5"></i>
+          <span>Caja y Movimientos</span>
+        </a>
+        <a href="#" class="flex items-center space-x-3 px-3 py-2.5 rounded-xl text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition-all font-medium">
+          <i class="fa-solid fa-user-plus w-5"></i>
+          <span>Invitados Ocasionales</span>
+        </a>
+        <a href="#" class="flex items-center space-x-3 px-3 py-2.5 rounded-xl text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition-all font-medium">
+          <i class="fa-solid fa-hand-holding-dollar w-5"></i>
+          <span>Créditos Pendientes</span>
+        </a>
+
+        <p class="px-3 text-xs font-semibold text-slate-400 uppercase tracking-wider pt-6 mb-2">Entrenamiento</p>
+        <a href="#" class="flex items-center space-x-3 px-3 py-2.5 rounded-xl text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition-all font-medium">
+          <i class="fa-solid fa-clipboard-list w-5"></i>
+          <span>Rutinas y Plantillas</span>
+        </a>
+        <a href="#" class="flex items-center space-x-3 px-3 py-2.5 rounded-xl text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition-all font-medium">
+          <i class="fa-solid fa-weight-scale w-5"></i>
+          <span>Evolución Física</span>
+        </a>
+      </nav>
+
+      <div class="bg-slate-100/80 p-3 rounded-xl border border-slate-200 flex items-center justify-between">
+        <div class="flex items-center space-x-2">
+          <div class="w-2.5 h-2.5 bg-emerald-500 rounded-full animate-pulse"></div>
+          <span class="text-xs text-slate-600 font-medium">Servidor en línea</span>
+        </div>
+        <span class="text-[10px] text-slate-400 font-mono">v1.0 MVP</span>
+      </div>
+    </aside>
+
+    <!-- Content Area -->
+    <main class="flex-1 overflow-y-auto p-6 space-y-6">
+
+      <!-- Header Section -->
+      <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div>
+          <h1 class="text-2xl font-bold text-slate-900 tracking-tight">Panel Principal de Recepción</h1>
+          <p class="text-slate-500 text-sm mt-0.5">Gestión de accesos, caja diaria y alertas de membresías en tiempo real.</p>
+        </div>
+        <div class="flex items-center gap-3">
+          <button class="bg-white hover:bg-slate-50 text-slate-700 px-4 py-2.5 rounded-xl border border-slate-300 font-medium text-sm transition-all flex items-center gap-2 shadow-sm">
+            <i class="fa-solid fa-user-plus text-brand-600"></i>
+            <span>Nuevo Socio</span>
+          </button>
+          <button class="bg-brand-600 hover:bg-brand-500 text-white px-4 py-2.5 rounded-xl font-medium text-sm shadow-lg shadow-brand-600/20 transition-all flex items-center gap-2">
+            <i class="fa-solid fa-ticket"></i>
+            <span>Registrar Invitado</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Metric Cards (KPIs) -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <!-- Card 1 -->
+        <div class="bg-white border border-slate-200 p-5 rounded-2xl shadow-sm">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Ingresos del Día</span>
+            <div class="w-9 h-9 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center border border-emerald-100">
+              <i class="fa-solid fa-sack-dollar text-base"></i>
+            </div>
+          </div>
+          <p class="text-2xl font-bold text-slate-900 mt-2">$1,450,000 <span class="text-xs font-normal text-slate-400">COP</span></p>
+          <div class="flex items-center text-xs text-emerald-600 mt-2 font-medium">
+            <i class="fa-solid fa-arrow-trend-up mr-1"></i>
+            <span>12 pagos registrados hoy</span>
+          </div>
+        </div>
+
+        <!-- Card 2 -->
+        <div class="bg-white border border-slate-200 p-5 rounded-2xl shadow-sm">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Accesos Hoy</span>
+            <div class="w-9 h-9 bg-brand-50 text-brand-600 rounded-xl flex items-center justify-center border border-brand-100">
+              <i class="fa-solid fa-person-walking-arrow-right text-base"></i>
+            </div>
+          </div>
+          <p class="text-2xl font-bold text-slate-900 mt-2">84 <span class="text-xs font-normal text-slate-400">ingresos</span></p>
+          <div class="flex items-center text-xs text-slate-500 mt-2 font-medium">
+            <span class="text-emerald-600 font-semibold mr-1">79 permitidos</span> • <span class="text-rose-600 font-semibold ml-1">5 denegados</span>
+          </div>
+        </div>
+
+        <!-- Card 3 -->
+        <div class="bg-white border border-slate-200 p-5 rounded-2xl shadow-sm">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Vencen en 5 Días</span>
+            <div class="w-9 h-9 bg-amber-50 text-amber-600 rounded-xl flex items-center justify-center border border-amber-100">
+              <i class="fa-solid fa-clock-rotate-left text-base"></i>
+            </div>
+          </div>
+          <p class="text-2xl font-bold text-amber-600 mt-2">14 <span class="text-xs font-normal text-slate-400">socios</span></p>
+          <div class="flex items-center text-xs text-amber-600 mt-2 font-medium">
+            <i class="fa-solid fa-triangle-exclamation mr-1"></i>
+            <span>Requieren recordatorio</span>
+          </div>
+        </div>
+
+        <!-- Card 4 -->
+        <div class="bg-white border border-slate-200 p-5 rounded-2xl shadow-sm">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Créditos / Saldos</span>
+            <div class="w-9 h-9 bg-rose-50 text-rose-600 rounded-xl flex items-center justify-center border border-rose-100">
+              <i class="fa-solid fa-hand-holding-dollar text-base"></i>
+            </div>
+          </div>
+          <p class="text-2xl font-bold text-slate-900 mt-2">$320,000 <span class="text-xs font-normal text-slate-400">COP</span></p>
+          <div class="flex items-center text-xs text-rose-600 mt-2 font-medium">
+            <i class="fa-solid fa-circle-exclamation mr-1"></i>
+            <span>4 socios con saldo pendiente</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Validation & Alerts Section -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+        <!-- Access Validation Box -->
+        <div class="lg:col-span-2 bg-white border border-slate-200 rounded-2xl p-6 flex flex-col justify-between relative overflow-hidden shadow-sm">
+          <div class="absolute top-0 right-0 p-6 opacity-5 pointer-events-none">
+            <i class="fa-solid fa-qrcode text-9xl text-slate-900"></i>
+          </div>
+
+          <div>
+            <div class="flex items-center justify-between mb-4">
+              <div class="flex items-center space-x-2">
+                <span class="w-3 h-3 bg-brand-500 rounded-full animate-ping"></span>
+                <h2 class="text-lg font-bold text-slate-900">Validación de Acceso en Puerta (QR / Documento)</h2>
+              </div>
+              <span class="text-xs bg-slate-100 text-slate-600 font-mono px-2.5 py-1 rounded-md border border-slate-200">GET /access/validate</span>
+            </div>
+
+            <!-- Scanner Search Form -->
+            <div class="flex gap-3 mb-6">
+              <div class="relative flex-1">
+                <i class="fa-solid fa-barcode absolute left-3.5 top-3.5 text-slate-400 text-lg"></i>
+                <input type="text" placeholder="Escanear Código QR o digitar Documento de Identidad..." class="w-full bg-slate-50 border border-slate-300 rounded-xl pl-11 pr-4 py-3 text-slate-800 placeholder-slate-400 focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500 font-mono text-sm">
+              </div>
+              <button class="bg-brand-600 hover:bg-brand-500 text-white px-6 py-3 rounded-xl font-semibold text-sm transition-all shadow-md shadow-brand-600/20 flex items-center gap-2">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <span>Validar</span>
+              </button>
+            </div>
+
+            <!-- Member Live Status Card -->
+            <div class="bg-slate-50 border-2 border-emerald-500/80 rounded-2xl p-5 flex flex-col sm:flex-row items-center gap-6 shadow-sm relative">
+              <div class="relative shrink-0">
+                <img class="w-28 h-28 rounded-2xl object-cover ring-4 ring-emerald-500/30 shadow-md" src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=250" alt="Foto Socio">
+                <span class="absolute -bottom-2 -right-2 bg-emerald-500 text-white p-1.5 rounded-full text-xs shadow-md">
+                  <i class="fa-solid fa-check"></i>
+                </span>
+              </div>
+
+              <div class="flex-1 text-center sm:text-left">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                  <div>
+                    <h3 class="text-xl font-bold text-slate-900">Carlos Andres Santiago</h3>
+                    <p class="text-xs text-slate-500 font-mono mt-0.5">Doc: 1.018.452.890 • Tel: 312 456 7890</p>
+                  </div>
+                  <div class="inline-flex items-center gap-2 bg-emerald-100 text-emerald-700 border border-emerald-300 px-3 py-1.5 rounded-xl font-bold text-sm self-center sm:self-start">
+                    <span class="w-2.5 h-2.5 bg-emerald-500 rounded-full animate-pulse"></span>
+                    <span>ACCESO PERMITIDO</span>
+                  </div>
+                </div>
+
+                <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 mt-4 pt-4 border-t border-slate-200 text-xs">
+                  <div>
+                    <p class="text-slate-400">Plan Actual</p>
+                    <p class="font-semibold text-slate-800 mt-0.5">Trimestral VIP</p>
+                  </div>
+                  <div>
+                    <p class="text-slate-400">Vencimiento</p>
+                    <p class="font-semibold text-emerald-600 mt-0.5">18 / Ago / 2026</p>
+                  </div>
+                  <div class="col-span-2 sm:col-span-1">
+                    <p class="text-slate-400">Estado de Caja</p>
+                    <p class="font-semibold text-slate-800 mt-0.5">Al Día ($0 Deuda)</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="mt-4 flex items-center justify-between text-xs text-slate-500 pt-3 border-t border-slate-100">
+            <span><i class="fa-solid fa-clock mr-1"></i> Último ingreso registrado: <strong>Hoy 08:15 AM</strong></span>
+            <button class="text-brand-600 hover:underline font-medium">Ver Histórico de Accesos →</button>
+          </div>
+        </div>
+
+        <!-- Expiring Subscriptions List -->
+        <div class="bg-white border border-slate-200 rounded-2xl p-5 flex flex-col justify-between shadow-sm">
+          <div>
+            <div class="flex items-center justify-between mb-4">
+              <h2 class="text-base font-bold text-slate-900 flex items-center gap-2">
+                <i class="fa-solid fa-bell-concierge text-amber-500"></i>
+                <span>Alertas de Vencimiento</span>
+              </h2>
+              <span class="text-xs bg-amber-50 text-amber-700 font-semibold px-2 py-0.5 rounded-full border border-amber-200">Por Renovar</span>
+            </div>
+
+            <div class="space-y-3">
+              <div class="p-3 bg-slate-50 rounded-xl border border-slate-200 flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                  <div class="w-9 h-9 bg-amber-100 text-amber-700 rounded-lg flex items-center justify-center font-bold text-sm">
+                    2d
+                  </div>
+                  <div>
+                    <p class="text-sm font-semibold text-slate-800">Mariana Rojas</p>
+                    <p class="text-xs text-slate-500">Plan Mensual • Vence: Jul 28</p>
+                  </div>
+                </div>
+                <button class="bg-emerald-50 hover:bg-emerald-600 text-emerald-600 hover:text-white border border-emerald-200 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center gap-1">
+                  <i class="fa-brands fa-whatsapp text-sm"></i>
+                  <span>Avisar</span>
+                </button>
+              </div>
+
+              <div class="p-3 bg-slate-50 rounded-xl border border-slate-200 flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                  <div class="w-9 h-9 bg-rose-100 text-rose-700 rounded-lg flex items-center justify-center font-bold text-sm">
+                    V
+                  </div>
+                  <div>
+                    <p class="text-sm font-semibold text-slate-800">Felipe Benítez</p>
+                    <p class="text-xs text-rose-600 font-medium">Vencido Ayer (Jul 25)</p>
+                  </div>
+                </div>
+                <button class="bg-brand-600 hover:bg-brand-500 text-white px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all">
+                  Renovar
+                </button>
+              </div>
+
+              <div class="p-3 bg-slate-50 rounded-xl border border-slate-200 flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                  <div class="w-9 h-9 bg-amber-100 text-amber-700 rounded-lg flex items-center justify-center font-bold text-sm">
+                    4d
+                  </div>
+                  <div>
+                    <p class="text-sm font-semibold text-slate-800">Andrea Gómez</p>
+                    <p class="text-xs text-slate-500">Plan Semestral • Vence: Jul 30</p>
+                  </div>
+                </div>
+                <button class="bg-emerald-50 hover:bg-emerald-600 text-emerald-600 hover:text-white border border-emerald-200 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center gap-1">
+                  <i class="fa-brands fa-whatsapp text-sm"></i>
+                  <span>Avisar</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <button class="w-full mt-4 text-center text-xs text-slate-500 hover:text-slate-800 py-2 bg-slate-100/80 rounded-xl hover:bg-slate-200 transition-all font-medium">
+            Ver todas las 14 suscripciones por vencer →
+          </button>
+        </div>
+      </div>
+
+      <!-- Recent Transactions Table & Quick Actions -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+        <!-- Financial Log Table -->
+        <div class="lg:col-span-2 bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
+          <div class="flex items-center justify-between mb-4">
+            <div>
+              <h2 class="text-base font-bold text-slate-900">Últimos Movimientos de Caja</h2>
+              <p class="text-xs text-slate-500">Ingresos por membresías, pases diarios de invitados y gastos.</p>
+            </div>
+            <button class="text-xs text-brand-600 hover:underline font-medium">Ver Caja Completa</button>
+          </div>
+
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs text-slate-600">
+              <thead class="bg-slate-50 text-slate-500 uppercase text-[10px] tracking-wider border-b border-slate-200">
+                <tr>
+                  <th class="py-3 px-3">Socio / Concepto</th>
+                  <th class="py-3 px-3">Tipo</th>
+                  <th class="py-3 px-3">Método</th>
+                  <th class="py-3 px-3">Monto</th>
+                  <th class="py-3 px-3 text-right">Hora</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-100">
+                <tr class="hover:bg-slate-50 transition-colors">
+                  <td class="py-3 px-3 font-semibold text-slate-800">David Cantor</td>
+                  <td class="py-3 px-3"><span class="bg-emerald-50 text-emerald-700 border border-emerald-200 px-2 py-0.5 rounded-full">Membresía Mensual</span></td>
+                  <td class="py-3 px-3 text-slate-500">Transferencia / Nequi</td>
+                  <td class="py-3 px-3 font-bold text-emerald-600">+$120,000</td>
+                  <td class="py-3 px-3 text-right text-slate-400 font-mono">10:42 AM</td>
+                </tr>
+                <tr class="hover:bg-slate-50 transition-colors">
+                  <td class="py-3 px-3 font-semibold text-slate-800">Invitado: Juan Pérez</td>
+                  <td class="py-3 px-3"><span class="bg-blue-50 text-blue-700 border border-blue-200 px-2 py-0.5 rounded-full">Pase Día Invitado</span></td>
+                  <td class="py-3 px-3 text-slate-500">Efectivo</td>
+                  <td class="py-3 px-3 font-bold text-emerald-600">+$15,000</td>
+                  <td class="py-3 px-3 text-right text-slate-400 font-mono">10:15 AM</td>
+                </tr>
+                <tr class="hover:bg-slate-50 transition-colors">
+                  <td class="py-3 px-3 font-semibold text-slate-800">Insumos de Limpieza</td>
+                  <td class="py-3 px-3"><span class="bg-rose-50 text-rose-700 border border-rose-200 px-2 py-0.5 rounded-full">Gasto Operativo</span></td>
+                  <td class="py-3 px-3 text-slate-500">Efectivo Caja</td>
+                  <td class="py-3 px-3 font-bold text-rose-600">-$45,000</td>
+                  <td class="py-3 px-3 text-right text-slate-400 font-mono">09:30 AM</td>
+                </tr>
+                <tr class="hover:bg-slate-50 transition-colors">
+                  <td class="py-3 px-3 font-semibold text-slate-800">Camila Torres</td>
+                  <td class="py-3 px-3"><span class="bg-emerald-50 text-emerald-700 border border-emerald-200 px-2 py-0.5 rounded-full">Plan Trimestral</span></td>
+                  <td class="py-3 px-3 text-slate-500">Tarjeta Débito</td>
+                  <td class="py-3 px-3 font-bold text-emerald-600">+$300,000</td>
+                  <td class="py-3 px-3 text-right text-slate-400 font-mono">08:05 AM</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Trainer Quick Actions -->
+        <div class="bg-white border border-slate-200 rounded-2xl p-5 flex flex-col justify-between shadow-sm">
+          <div>
+            <div class="flex items-center justify-between mb-4">
+              <h2 class="text-base font-bold text-slate-900 flex items-center gap-2">
+                <i class="fa-solid fa-dumbbell text-brand-600"></i>
+                <span>Módulo Entrenador</span>
+              </h2>
+              <span class="text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded-md border border-slate-200">Retención</span>
+            </div>
+
+            <p class="text-xs text-slate-500 mb-4">Gestión de planes de entrenamiento y seguimiento físico antropométrico.</p>
+
+            <div class="space-y-3">
+              <button class="w-full bg-slate-50 hover:bg-slate-100/80 border border-slate-200 p-3 rounded-xl flex items-center justify-between text-left transition-all group">
+                <div class="flex items-center space-x-3">
+                  <div class="w-9 h-9 bg-brand-50 text-brand-600 rounded-lg flex items-center justify-center group-hover:bg-brand-600 group-hover:text-white transition-all">
+                    <i class="fa-solid fa-file-circle-plus"></i>
+                  </div>
+                  <div>
+                    <p class="text-sm font-semibold text-slate-800">Asignar Rutina a Socio</p>
+                    <p class="text-[11px] text-slate-500">Plantillas reutilizables por objetivo</p>
+                  </div>
+                </div>
+                <i class="fa-solid fa-chevron-right text-slate-400 text-xs"></i>
+              </button>
+
+              <button class="w-full bg-slate-50 hover:bg-slate-100/80 border border-slate-200 p-3 rounded-xl flex items-center justify-between text-left transition-all group">
+                <div class="flex items-center space-x-3">
+                  <div class="w-9 h-9 bg-emerald-50 text-emerald-600 rounded-lg flex items-center justify-center group-hover:bg-emerald-600 group-hover:text-white transition-all">
+                    <i class="fa-solid fa-tape"></i>
+                  </div>
+                  <div>
+                    <p class="text-sm font-semibold text-slate-800">Registrar Medición Física</p>
+                    <p class="text-[11px] text-slate-500">Peso, % grasa y pliegues</p>
+                  </div>
+                </div>
+                <i class="fa-solid fa-chevron-right text-slate-400 text-xs"></i>
+              </button>
+            </div>
+          </div>
+
+          <div class="p-3 bg-brand-50 border border-brand-200 rounded-xl mt-4">
+            <p class="text-xs text-brand-700 font-medium">💡 Retención de Clientes</p>
+            <p class="text-[11px] text-slate-600 mt-0.5">El 80% de los socios que registran su evolución física renuevan su plan al segundo mes.</p>
+          </div>
+        </div>
+
+      </div>
+
+    </main>
+  </div>
+
+  <!-- LÓGICA DE CONTROL DE SESIÓN -->
+  <script>
+    // 1. Verificar credenciales y cargar datos del usuario dinámicamente
+    const token = localStorage.getItem('token_todoapp');
+    const usuarioGlobal = JSON.parse(localStorage.getItem('usuario_todoapp'));
+
+    if (!token || !usuarioGlobal) {
+      window.location.href = '/'; // Redirige al Login si no hay datos válidos
+    } else {
+      const elementoNombre = document.getElementById('nombre-usuario');
+      if (elementoNombre) {
+        elementoNombre.innerText = usuarioGlobal.nombre || 'Usuario';
+      }
+    }
+
+    // 2. Función para cerrar sesión limpiando el almacenamiento y las cookies
+    function cerrarSesion() {
+      // Limpiar LocalStorage
+      localStorage.removeItem('token_todoapp');
+      localStorage.removeItem('usuario_todoapp');
+
+      // Limpiar cookies asociadas al sitio
+      document.cookie.split(";").forEach((cookie) => {
+        const eqPos = cookie.indexOf("=");
+        const name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
+        document.cookie = name.trim() + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/";
+      });
+
+      // Redirigir al inicio (pantalla de login)
+      window.location.href = '/';
+    }
+  </script>
+</body>
+</html>
